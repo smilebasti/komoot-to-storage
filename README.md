@@ -129,7 +129,3 @@ Health check endpoint.
 ## License
 
 GNU General Public License v3.0 - see [LICENSE](LICENSE) for details.
-
----
-
-© 2026 Sebastian Wieser
