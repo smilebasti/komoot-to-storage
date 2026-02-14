@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="{{ t.lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komoot to Storage Exporter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8fdf5 0%, #e8f5e0 100%);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .header-title {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .storage-section {
+            display: none;
+        }
+        .storage-section.active {
+            display: block;
+        }
+        .storage-type-btn {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .storage-type-btn:hover {
+            border-color: #0d6efd !important;
+        }
+        .storage-type-btn.active {
+            border-color: #0d6efd !important;
+            background-color: #e7f1ff !important;
+        }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <a href="/set-language/{{ other_lang }}" class="lang-btn" title="{{ other_name }}">
+            {{ other_flag }}
+        </a>
+    </div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <a href="/" class="text-decoration-none text-muted mb-3 d-inline-block">
+                    <i class="bi bi-arrow-left me-1"></i>{{ t.back_to_home }}
+                </a>
+                <h1 class="header-title display-5 fw-bold"><i class="bi bi-map"></i> Komoot to Storage</h1>
+
+                <div class="alert alert-light text-center mb-4" role="alert">
+                    <strong>{{ t.how_it_works_short }}</strong> {{ t.how_it_works_desc }}
+                </div>
+
+                <form id="configForm">
+                    <!-- Komoot Credentials -->
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-person-badge"></i> {{ t.komoot_credentials }}</div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="komoot_email" class="form-label">{{ t.email }}</label>
+                                    <input type="email" class="form-control" id="komoot_email" name="komoot_email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="komoot_password" class="form-label">{{ t.password }}</label>
+                                    <input type="password" class="form-control" id="komoot_password" name="komoot_password" required>
+                                </div>
+                            </div>
+                            <input type="hidden" id="komoot_api_key" name="komoot_api_key">
+                        </div>
+                    </div>
+
+                    <!-- Export Settings -->
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-sliders"></i> {{ t.export_settings }}</div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="start_date" class="form-label">{{ t.start_date }}</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="end_date" class="form-label">{{ t.end_date }}</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="exercise_type" class="form-label">{{ t.sport_type }}</label>
+                                    <select class="form-select" id="exercise_type" name="exercise_type">
+                                        <option value="">{{ t.sport_all }}</option>
+                                        <option value="hiking">{{ t.sport_hiking }}</option>
+                                        <option value="running">{{ t.sport_running }}</option>
+                                        <option value="cycling">{{ t.sport_cycling }}</option>
+                                        <option value="mtb">{{ t.sport_mtb }}</option>
+                                        <option value="racebike">{{ t.sport_racebike }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="export_name" class="form-label">{{ t.export_name }}</label>
+                                    <input type="text" class="form-control" id="export_name" name="export_name" placeholder="{{ t.export_name_placeholder }}">
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="complete_only" name="complete_only" checked>
+                                        <label class="form-check-label" for="complete_only">
+                                            {{ t.complete_only }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Storage Type Selection -->
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-hdd-stack"></i> {{ t.storage_location }}</div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-{{ '4' if self_hosted else '6' }}">
+                                    <div class="card storage-type-btn active h-100 text-center p-3" data-storage="s3">
+                                        <i class="bi bi-cloud fs-1 text-primary"></i>
+                                        <h6 class="mt-2 mb-0">{{ t.s3_title }}</h6>
+                                        <small class="text-muted">AWS, MinIO, Backblaze</small>
+                                    </div>
+                                </div>
+                                {% if self_hosted %}
+                                <div class="col-md-4">
+                                    <div class="card storage-type-btn h-100 text-center p-3" data-storage="nfs">
+                                        <i class="bi bi-folder fs-1 text-success"></i>
+                                        <h6 class="mt-2 mb-0">{{ t.nfs_title }}</h6>
+                                        <small class="text-muted">{{ t.network_path }}</small>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="col-md-{{ '4' if self_hosted else '6' }}">
+                                    <div class="card storage-type-btn h-100 text-center p-3" data-storage="smb">
+                                        <i class="bi bi-hdd-network fs-1 text-warning"></i>
+                                        <h6 class="mt-2 mb-0">{{ t.smb_title }}</h6>
+                                        <small class="text-muted">Windows Share, NAS</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="storage_type" name="storage_type" value="s3">
+
+                            <!-- S3 Settings -->
+                            <div id="s3-settings" class="storage-section active">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="s3_endpoint" class="form-label">{{ t.endpoint_url }}</label>
+                                        <input type="url" class="form-control" id="s3_endpoint" name="s3_endpoint" placeholder="https://s3.eu-central-1.amazonaws.com">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="s3_bucket" class="form-label">{{ t.bucket_name }}</label>
+                                        <input type="text" class="form-control" id="s3_bucket" name="s3_bucket" placeholder="my-bucket">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="s3_access_key" class="form-label">{{ t.access_key }}</label>
+                                        <input type="text" class="form-control" id="s3_access_key" name="s3_access_key">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="s3_secret_key" class="form-label">{{ t.secret_key }}</label>
+                                        <input type="password" class="form-control" id="s3_secret_key" name="s3_secret_key">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if self_hosted %}
+                            <!-- NFS Settings -->
+                            <div id="nfs-settings" class="storage-section">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="nfs_path" class="form-label">{{ t.path }}</label>
+                                        <input type="text" class="form-control" id="nfs_path" name="nfs_path" placeholder="/mnt/nfs/komoot-backup">
+                                        <div class="form-text">{{ t.path_hint }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- SMB Settings -->
+                            <div id="smb-settings" class="storage-section">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="smb_server" class="form-label">{{ t.server }}</label>
+                                        <input type="text" class="form-control" id="smb_server" name="smb_server" placeholder="192.168.1.100">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="smb_share" class="form-label">{{ t.share_name }}</label>
+                                        <input type="text" class="form-control" id="smb_share" name="smb_share" placeholder="backup">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="smb_username" class="form-label">{{ t.username }}</label>
+                                        <input type="text" class="form-control" id="smb_username" name="smb_username">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="smb_password" class="form-label">{{ t.password }}</label>
+                                        <input type="password" class="form-control" id="smb_password" name="smb_password">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="smb_path" class="form-label">{{ t.subfolder }}</label>
+                                        <input type="text" class="form-control" id="smb_path" name="smb_path" placeholder="komoot/gpx">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="result" class="mb-4"></div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <span class="spinner-border spinner-border-sm loading-spinner" role="status" aria-hidden="true"></span>
+                            <span class="btn-text"><i class="bi bi-download"></i> {{ t.start_export }}</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4 text-muted">
+                    <small>
+                        <i class="bi bi-shield-check"></i> {{ t.privacy_note }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Translations for JS
+        const t = {
+            exporting: "{{ t.exporting }}",
+            connecting: "{{ t.connecting }}",
+            error: "{{ t.error }}",
+            unexpected_error: "{{ t.unexpected_error }}",
+            start_export: "{{ t.start_export }}"
+        };
+
+        // Storage type selection
+        document.querySelectorAll('.storage-type-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.storage-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const storageType = this.dataset.storage;
+                document.getElementById('storage_type').value = storageType;
+                document.querySelectorAll('.storage-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(storageType + '-settings').classList.add('active');
+                updateRequiredFields(storageType);
+            });
+        });
+
+        function updateRequiredFields(storageType) {
+            ['s3_endpoint', 's3_bucket', 's3_access_key', 's3_secret_key',
+                'nfs_path', 'smb_server', 'smb_share', 'smb_username', 'smb_password'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.removeAttribute('required');
+                });
+
+            if (storageType === 's3') {
+                ['s3_endpoint', 's3_bucket', 's3_access_key', 's3_secret_key'].forEach(id => {
+                    document.getElementById(id).setAttribute('required', '');
+                });
+            } else if (storageType === 'nfs') {
+                document.getElementById('nfs_path').setAttribute('required', '');
+            } else if (storageType === 'smb') {
+                ['smb_server', 'smb_share', 'smb_username', 'smb_password'].forEach(id => {
+                    document.getElementById(id).setAttribute('required', '');
+                });
+            }
+        }
+
+        updateRequiredFields('s3');
+
+        document.getElementById('configForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const resultDiv = document.getElementById('result');
+            const submitBtn = document.getElementById('submitBtn');
+            const spinner = submitBtn.querySelector('.loading-spinner');
+            const btnText = submitBtn.querySelector('.btn-text');
+
+            submitBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            btnText.innerHTML = ' ' + t.exporting;
+            resultDiv.innerHTML = `
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    <div>${t.connecting}</div>
+                </div>`;
+
+            const email = document.getElementById('komoot_email').value;
+            const password = document.getElementById('komoot_password').value;
+            document.getElementById('komoot_api_key').value = `${email}:${password}`;
+
+            const formData = new FormData(this);
+            fetch('/export', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        resultDiv.innerHTML = `<div class="alert alert-success" role="alert"><i class="bi bi-check-circle-fill"></i> ${data.message}</div>`;
+                    } else {
+                        resultDiv.innerHTML = `<div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle-fill"></i> ${t.error}: ${data.message}</div>`;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle-fill"></i> ${t.unexpected_error}: ${error.message}</div>`;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    spinner.style.display = 'none';
+                    btnText.innerHTML = '<i class="bi bi-download"></i> ' + t.start_export;
+                });
+        });
+    </script>
+</body>
+
+</html>

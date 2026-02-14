@@ -1,0 +1,5 @@
+Flask==3.1.2
+requests==2.32.5
+boto3==1.42.37
+gevent==25.9.1
+smbprotocol>=1.10.0
