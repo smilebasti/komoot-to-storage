@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="{{ t.lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #6B8E23;
+            --primary-dark: #556B2F;
+        }
+        body {
+            background: linear-gradient(135deg, #f8fdf5 0%, #e8f5e0 100%);
+            min-height: 100vh;
+        }
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #5a6c7d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .btn-primary-custom {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+        }
+        .btn-primary-custom:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        .process-step {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .process-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .process-icon i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        .storage-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: 100%;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .storage-card:hover {
+            transform: translateY(-5px);
+        }
+        .storage-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .storage-card .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ddd;
+        }
+        .feature-card.planned {
+            border-left-color: var(--primary);
+            opacity: 0.8;
+        }
+        .badge-coming {
+            background-color: #e8f5e0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .badge-selfhosted {
+            background-color: #fff3cd;
+            color: #856404;
+            font-weight: 600;
+        }
+        .section-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <a href="/set-language/{{ other_lang }}" class="lang-btn" title="{{ other_name }}">
+            {{ other_flag }}
+        </a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="mb-4">
+                <i class="bi bi-bicycle text-success" style="font-size: 4rem;"></i>
+            </div>
+            <h1 class="hero-title mb-3">{{ t.hero_title }}</h1>
+            <p class="hero-subtitle mb-5">
+                {{ t.hero_subtitle }}
+            </p>
+            <a href="/export" class="btn btn-primary-custom btn-lg text-white">
+                <i class="bi bi-download me-2"></i>{{ t.cta_export }}
+            </a>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center">{{ t.how_it_works }}</h2>
+            <div class="row align-items-center">
+                <div class="col-md-3 col-6">
+                    <div class="process-step">
+                        <div class="process-icon">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <h5>{{ t.step1_title }}</h5>
+                        <p class="text-muted small">{{ t.step1_desc }}</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="process-step">
+                        <div class="process-icon">
+                            <i class="bi bi-funnel"></i>
+                        </div>
+                        <h5>{{ t.step2_title }}</h5>
+                        <p class="text-muted small">{{ t.step2_desc }}</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="process-step">
+                        <div class="process-icon">
+                            <i class="bi bi-hdd-stack"></i>
+                        </div>
+                        <h5>{{ t.step3_title }}</h5>
+                        <p class="text-muted small">{{ t.step3_desc }}</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="process-step">
+                        <div class="process-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h5>{{ t.step4_title }}</h5>
+                        <p class="text-muted small">{{ t.step4_desc }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supported Storage -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <h2 class="section-title text-center">{{ t.supported_storage }}</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="storage-card">
+                        <i class="bi bi-cloud text-primary"></i>
+                        <h4>{{ t.s3_title }}</h4>
+                        <p class="text-muted">{{ t.s3_desc }}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="storage-card">
+                        <span class="badge badge-selfhosted">Self-Hosted</span>
+                        <i class="bi bi-folder text-success"></i>
+                        <h4>{{ t.nfs_title }}</h4>
+                        <p class="text-muted">{{ t.nfs_desc }}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="storage-card">
+                        <i class="bi bi-hdd-network text-warning"></i>
+                        <h4>{{ t.smb_title }}</h4>
+                        <p class="text-muted">{{ t.smb_desc }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Features -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center">{{ t.planned_features }}</h2>
+            <p class="text-center text-muted mb-5">{{ t.planned_features_desc }}</p>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="feature-card planned">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5><i class="bi bi-globe me-2"></i>{{ t.webdav_title }}</h5>
+                                <p class="text-muted mb-0">{{ t.webdav_desc }}</p>
+                            </div>
+                            <span class="badge badge-coming">{{ t.planned }}</span>
+                        </div>
+                    </div>
+                    <div class="feature-card planned">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5><i class="bi bi-clock-history me-2"></i>{{ t.auto_export_title }}</h5>
+                                <p class="text-muted mb-0">{{ t.auto_export_desc }}</p>
+                            </div>
+                            <span class="badge badge-selfhosted">{{ t.selfhosted_planned }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-card planned">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5><i class="bi bi-envelope me-2"></i>{{ t.email_title }}</h5>
+                                <p class="text-muted mb-0">{{ t.email_desc }}</p>
+                            </div>
+                            <span class="badge badge-coming">{{ t.planned }}</span>
+                        </div>
+                    </div>
+                    <div class="feature-card planned">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5><i class="bi bi-map me-2"></i>{{ t.map_title }}</h5>
+                                <p class="text-muted mb-0">{{ t.map_desc }}</p>
+                            </div>
+                            <span class="badge badge-selfhosted">{{ t.selfhosted_planned }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-5 text-center">
+        <div class="container">
+            <h2 class="mb-4">{{ t.ready_to_export }}</h2>
+            <a href="/export" class="btn btn-primary-custom btn-lg text-white">
+                <i class="bi bi-download me-2"></i>{{ t.cta_start }}
+            </a>
+        </div>
+    </section>
+
+    <!-- Developer / Self-hosted -->
+    <section class="py-5 text-center bg-white">
+        <div class="container">
+            <h2 class="mb-4">{{ t.for_developers }}</h2>
+            <p class="text-muted mb-4">{{ t.developer_desc }}</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/api" class="btn btn-primary-custom btn-lg text-white">
+                    <i class="bi bi-code-slash me-2"></i>{{ t.api_documentation }}
+                </a>
+                <a href="https://github.com/smilebasti/komoot-to-storage" class="btn btn-primary-custom btn-lg text-white">
+                    <i class="bi bi-github me-2"></i>{{ t.code_on_github }}
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-2"><i class="bi bi-bicycle me-2"></i>Komoot to Storage</p>
+            <p class="small text-white-50 mb-0">
+                {{ t.footer_tagline }}
+            </p>
+            <p class="small text-white-50 mt-3">
+                <a href="https://github.com/smilebasti/komoot-to-storage" class="text-white-50">
+                    <i class="bi bi-github me-1"></i>GitHub
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
