@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="{{ t.lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API - Komoot to Storage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #6B8E23;
+            --primary-dark: #556B2F;
+        }
+        body {
+            background: linear-gradient(135deg, #f8fdf5 0%, #e8f5e0 100%);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+        .code-block .comment {
+            color: #75715e;
+        }
+        .code-block .string {
+            color: #a6e22e;
+        }
+        .code-block .key {
+            color: #66d9ef;
+        }
+        .badge-method {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+        }
+        .endpoint-url {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+        .lang-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .param-table th {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <a href="/set-language/{{ other_lang }}" class="lang-btn" title="{{ other_name }}">
+            {{ other_flag }}
+        </a>
+    </div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <a href="/" class="text-decoration-none text-muted mb-3 d-inline-block">
+                    <i class="bi bi-arrow-left me-1"></i>{{ t.back_to_home }}
+                </a>
+                <h1 class="display-5 fw-bold mb-4"><i class="bi bi-code-slash"></i> {{ t.api_title }}</h1>
+                
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>{{ t.rate_limit_title }}:</strong> {{ rate_limit }}
+                </div>
+
+                <!-- Export Endpoint -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge bg-success badge-method me-2">POST</span>
+                        <span class="endpoint-url">/api/export</span>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ t.api_export_desc }}</p>
+                        
+                        <h6 class="mt-4 mb-3">{{ t.request_body }}</h6>
+                        <table class="table table-bordered param-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ t.parameter }}</th>
+                                    <th>{{ t.type }}</th>
+                                    <th>{{ t.required }}</th>
+                                    <th>{{ t.description }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>komoot_api_key</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">{{ t.yes }}</span></td>
+                                    <td>{{ t.api_key_desc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>start_date</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">{{ t.yes }}</span></td>
+                                    <td>{{ t.start_date_desc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>end_date</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">{{ t.yes }}</span></td>
+                                    <td>{{ t.end_date_desc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>storage_type</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-danger">{{ t.yes }}</span></td>
+                                    <td>{{ t.storage_type_desc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>export_name</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-secondary">{{ t.no }}</span></td>
+                                    <td>{{ t.export_name_desc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>exercise_type</code></td>
+                                    <td>string</td>
+                                    <td><span class="badge bg-secondary">{{ t.no }}</span></td>
+                                    <td>{{ t.exercise_type_desc }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>complete_only</code></td>
+                                    <td>boolean</td>
+                                    <td><span class="badge bg-secondary">{{ t.no }}</span></td>
+                                    <td>{{ t.complete_only_desc }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h6 class="mt-4 mb-3">{{ t.storage_params }}</h6>
+                        
+                        <div class="accordion" id="storageAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#s3Params">
+                                        <i class="bi bi-cloud me-2"></i> S3 Storage
+                                    </button>
+                                </h2>
+                                <div id="s3Params" class="accordion-collapse collapse show" data-bs-parent="#storageAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>s3_endpoint</code></td><td>{{ t.s3_endpoint_desc }}</td></tr>
+                                            <tr><td><code>s3_bucket</code></td><td>{{ t.s3_bucket_desc }}</td></tr>
+                                            <tr><td><code>s3_access_key</code></td><td>{{ t.s3_access_key_desc }}</td></tr>
+                                            <tr><td><code>s3_secret_key</code></td><td>{{ t.s3_secret_key_desc }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#smbParams">
+                                        <i class="bi bi-hdd-network me-2"></i> SMB / CIFS
+                                    </button>
+                                </h2>
+                                <div id="smbParams" class="accordion-collapse collapse" data-bs-parent="#storageAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>smb_server</code></td><td>{{ t.smb_server_desc }}</td></tr>
+                                            <tr><td><code>smb_share</code></td><td>{{ t.smb_share_desc }}</td></tr>
+                                            <tr><td><code>smb_username</code></td><td>{{ t.smb_username_desc }}</td></tr>
+                                            <tr><td><code>smb_password</code></td><td>{{ t.smb_password_desc }}</td></tr>
+                                            <tr><td><code>smb_path</code></td><td>{{ t.smb_path_desc }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#nfsParams">
+                                        <i class="bi bi-folder me-2"></i> NFS / {{ t.local }} (Self-Hosted)
+                                    </button>
+                                </h2>
+                                <div id="nfsParams" class="accordion-collapse collapse" data-bs-parent="#storageAccordion">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>nfs_path</code></td><td>{{ t.nfs_path_desc }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-4 mb-3">{{ t.example_request }}</h6>
+                        <div class="code-block">
+<pre>curl -X POST {{ request.host_url }}api/export \
+  -H "Content-Type: application/json" \
+  -d '{
+    "komoot_api_key": "email@example.com:password",
+    "start_date": "2025-01-01",
+    "end_date": "2025-12-31",
+    "storage_type": "s3",
+    "s3_endpoint": "https://s3.eu-central-1.amazonaws.com",
+    "s3_bucket": "my-komoot-backup",
+    "s3_access_key": "AKIAIOSFODNN7EXAMPLE",
+    "s3_secret_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  }'</pre>
+                        </div>
+
+                        <h6 class="mt-4 mb-3">{{ t.example_response }}</h6>
+                        <div class="code-block">
+<pre>{
+  "status": "success",
+  "message": "Exported 15 tours to S3 bucket my-komoot-backup"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Endpoint -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge bg-primary badge-method me-2">GET</span>
+                        <span class="endpoint-url">/health</span>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ t.health_desc }}</p>
+                        
+                        <h6 class="mt-3 mb-3">{{ t.example_response }}</h6>
+                        <div class="code-block">
+<pre>{
+  "status": "ok",
+  "version": "v0.1.0"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Responses -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-exclamation-triangle me-2"></i>{{ t.error_responses }}
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>{{ t.status_code }}</th>
+                                    <th>{{ t.description }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>400</code></td>
+                                    <td>{{ t.error_400 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>429</code></td>
+                                    <td>{{ t.error_429 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><code>500</code></td>
+                                    <td>{{ t.error_500 }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
