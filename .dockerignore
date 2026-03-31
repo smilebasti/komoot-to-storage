@@ -1,0 +1,12 @@
+.git
+.gitignore
+tests/
+*.md
+*.pyc
+__pycache__
+.pytest_cache
+renovate.json
+LICENSE
+docker-compose.yml
+.gitlab-ci.yml
+.dockerignore
