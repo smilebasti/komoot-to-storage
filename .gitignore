@@ -1,0 +1,6 @@
+__pycache__
+venv
+.venv
+.pytest_cache
+wanderer-repo
+config.json
